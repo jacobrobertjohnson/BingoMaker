@@ -1,0 +1,95 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+
+    var service = HttpContext.RequestServices.GetService(typeof(Microsoft.AspNetCore.Hosting.IHostingEnvironment)) as Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+    string wwwroot = service.WebRootPath,
+        images = System.IO.Path.Combine(wwwroot, "img");
+
+    var files = Directory
+        .GetFiles(images)
+        .OrderBy(f => new Random().NextInt64())
+        .Take(24)
+        .ToArray();
+
+    var logos = new string[5][]
+    {
+        new string[5],
+        new string[5],
+        new string[5],
+        new string[5],
+        new string[5],
+    };
+
+    int row = 0,
+        col = 0;
+
+    for (int i = 0; i < files.Count(); i++) {
+        if (row == 2 && col == 2) {
+            logos[row][col] = "free";
+            col++;
+        }
+
+        logos[row][col] = System.IO.Path.GetFileName(files[i]);
+
+        if (++col >= 5) {
+            row++;
+            col = 0;
+        }
+    }
+}
+
+<style>
+    body {
+        font-family: Helvetica, sans-serif;
+        font-size: 14pt;
+    }
+
+    th, td, table {
+        border: 1px solid black;
+        vertical-align: center;
+        text-align: center;
+    }
+
+    td {
+        width: 1.5in;
+        height: 1.5in;
+    }
+
+    img {
+        max-width: 100%;
+    }
+</style>
+
+<table cellspacing="0">
+    <thead>
+        <tr>
+            <th colspan="5">Car Logo Bingo</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (string[] logoRow in logos) {
+            <text>
+                <tr>
+                    @foreach (string logo in logoRow) {
+                        <text>
+                            <td>
+                                @if (logo == "free") {
+                                    <text>FREE<br />SPACE</text>
+                                } else {
+                                    <text>
+                                        <img src="~/img/@logo" />
+                                    </text>
+                                }
+                            </td>
+                        </text>
+                    }
+                </tr>
+            </text>
+        }
+
+
+    </tbody>
+</table>
